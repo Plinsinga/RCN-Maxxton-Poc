@@ -24,8 +24,12 @@ export const ReservationPage: React.FC = () => {
       return;
     }
 
-    if (new Date(startDate) > new Date(endDate)) {
-        setError('Vertrekdatum moet na de aankomstdatum liggen.');
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    // Check: Vertrek moet later zijn dan aankomst (dus niet gelijk of eerder)
+    if (start >= end) {
+        setError('De vertrekdatum moet minimaal 1 dag na de aankomstdatum liggen.');
         return;
     }
 

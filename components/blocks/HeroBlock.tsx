@@ -8,14 +8,20 @@ interface Props {
 
 export const HeroBlock: React.FC<Props> = ({ data }) => {
   return (
-    <div className="relative mb-12">
-      {/* Background Image */}
-      <div className="bg-brand-900 h-[65vh] relative flex items-center justify-center overflow-hidden">
-        <img 
-          src={data.imageUrl} 
-          alt={data.title} 
-          className="absolute inset-0 w-full h-full object-cover opacity-50"
-        />
+    <div className="relative w-full mb-32"> {/* Grote margin-bottom om ruimte te maken voor de search bar die uitsteekt */}
+      {/* Background Image Container */}
+      <div className="bg-green-800 h-[65vh] w-full relative flex items-center justify-center overflow-hidden z-0">
+        {data.imageUrl && (
+            <img 
+            src={data.imageUrl} 
+            alt={data.title} 
+            className="absolute inset-0 w-full h-full object-cover opacity-60"
+            onError={(e) => {
+                // Fallback als image faalt
+                (e.target as HTMLImageElement).style.display = 'none';
+            }}
+            />
+        )}
         
         {/* Text Content */}
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto mt-[-50px]">
@@ -23,17 +29,22 @@ export const HeroBlock: React.FC<Props> = ({ data }) => {
             {data.title}
           </h1>
           {data.subtitle && (
-            <p className="text-xl text-brand-50 mb-8 max-w-2xl mx-auto drop-shadow-md">
+            <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto drop-shadow-md">
               {data.subtitle}
             </p>
           )}
         </div>
       </div>
 
-      {/* Conditional Search Form Overlay */}
+      {/* Search Form Overlay - Absolute positioning relative to the wrapper */}
       {data.showSearchForm && (
-        <div className="relative z-20 -mt-24 max-w-6xl mx-auto px-4">
-          <SearchForm />
+        <div className="absolute bottom-0 left-0 right-0 transform translate-y-1/2 z-20 px-4">
+            <div className="max-w-6xl mx-auto">
+                 {/* SearchForm container met shadow voor diepte */}
+                 <div className="shadow-2xl rounded-xl">
+                    <SearchForm variant="default" />
+                 </div>
+            </div>
         </div>
       )}
     </div>
