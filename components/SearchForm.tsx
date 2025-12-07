@@ -6,17 +6,25 @@ import { Resort } from '../types';
 
 interface SearchFormProps {
   className?: string;
+  variant?: 'default' | 'minimal';
 }
 
-export const SearchForm: React.FC<SearchFormProps> = ({ className = '' }) => {
+export const SearchForm: React.FC<SearchFormProps> = ({ className = '', variant = 'default' }) => {
   const navigate = useNavigate();
   const { setDates, setPark, selectedPark, startDate, endDate } = useBooking();
   
   const [parks, setParks] = useState<Resort[]>([]);
-  const [localParkId, setLocalParkId] = useState<string>(selectedPark?.maxxtonData.resortId.toString() || '');
-  const [localStart, setLocalStart] = useState(startDate);
-  const [localEnd, setLocalEnd] = useState(endDate);
+  const [localParkId, setLocalParkId] = useState<string>('');
+  const [localStart, setLocalStart] = useState('');
+  const [localEnd, setLocalEnd] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+
+  // Sync local state with context when context changes
+  useEffect(() => {
+    setLocalParkId(selectedPark?.maxxtonData.resortId.toString() || '');
+    setLocalStart(startDate);
+    setLocalEnd(endDate);
+  }, [selectedPark, startDate, endDate]);
 
   // Laad parken voor de dropdown
   useEffect(() => {
@@ -40,19 +48,21 @@ export const SearchForm: React.FC<SearchFormProps> = ({ className = '' }) => {
     setDates(localStart, localEnd);
 
     if (localParkId) {
-      // Als park is gekozen, update context en ga naar detailpagina
       const chosenPark = parks.find(p => p.maxxtonData.resortId.toString() === localParkId);
       setPark(chosenPark || null);
       navigate(`/parks/${localParkId}`);
     } else {
-      // Geen park gekozen? Ga naar de lijstpagina (filters worden via context meegenomen)
       setPark(null);
       navigate('/parks');
     }
   };
 
+  const containerClasses = variant === 'default' 
+    ? `bg-white rounded-xl shadow-xl p-6 md:p-8 ${className}`
+    : `bg-transparent ${className}`;
+
   return (
-    <div className={`bg-white rounded-xl shadow-xl p-6 md:p-8 ${className}`}>
+    <div className={containerClasses}>
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
         
         {/* Park Selectie */}
@@ -60,7 +70,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ className = '' }) => {
           <label className="block text-sm font-bold text-gray-700 mb-2">Waar wil je heen?</label>
           <div className="relative">
             <select
-              className="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none appearance-none"
+              className="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none appearance-none text-gray-900"
               value={localParkId}
               onChange={(e) => setLocalParkId(e.target.value)}
               disabled={isLoading}
@@ -83,7 +93,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ className = '' }) => {
           <label className="block text-sm font-bold text-gray-700 mb-2">Aankomst</label>
           <input 
             type="date" 
-            className="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
+            className="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none text-gray-900"
             value={localStart}
             min={new Date().toISOString().split('T')[0]} // Geen verleden
             onChange={(e) => setLocalStart(e.target.value)}
@@ -94,7 +104,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ className = '' }) => {
           <label className="block text-sm font-bold text-gray-700 mb-2">Vertrek</label>
           <input 
             type="date" 
-            className="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
+            className="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none text-gray-900"
             value={localEnd}
             min={localStart || new Date().toISOString().split('T')[0]}
             onChange={(e) => setLocalEnd(e.target.value)}
@@ -106,7 +116,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ className = '' }) => {
         <div className="md:col-span-1">
           <button 
             type="submit" 
-            className="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md flex justify-center items-center"
+            className="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md flex justify-center items-center h-[50px]"
           >
             {localParkId ? 'Toon aanbod' : 'Zoek parken'} &rarr;
           </button>
