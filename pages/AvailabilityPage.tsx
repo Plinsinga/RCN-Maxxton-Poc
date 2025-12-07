@@ -20,6 +20,8 @@ export const AvailabilityPage: React.FC = () => {
 
   useEffect(() => {
     if (selectedPark && selectedAccommodation && startDate && endDate) {
+      setChecking(true);
+      
       const runCheck = async () => {
         try {
           const result = await getAvailability({
@@ -36,9 +38,10 @@ export const AvailabilityPage: React.FC = () => {
           setChecking(false);
         }
       };
+
       runCheck();
     }
-  }, []);
+  }, [selectedPark, selectedAccommodation, startDate, endDate]);
 
   if (!selectedPark || !selectedAccommodation) return null;
 

@@ -9,6 +9,9 @@ export interface Resort {
     resortId: number;
     resortName: string;
     visitAddress: {
+      address1?: string;
+      houseNumber?: string;
+      zipCode?: string;
       city: string;
       countryName: string;
     };

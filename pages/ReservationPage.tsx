@@ -17,7 +17,17 @@ export const ReservationPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (!selectedPark || !selectedAccommodation) return;
+
+    // Extra validatie check
+    if (!selectedPark || !selectedAccommodation || !startDate || !endDate) {
+      setError('Je boeking is onvolledig. Kies eerst een park, accommodatie en geldige data.');
+      return;
+    }
+
+    if (new Date(startDate) > new Date(endDate)) {
+        setError('Vertrekdatum moet na de aankomstdatum liggen.');
+        return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -45,12 +55,12 @@ export const ReservationPage: React.FC = () => {
     navigate('/');
   };
 
-  if (!selectedPark || !selectedAccommodation) {
+  if (!selectedPark || !selectedAccommodation || !startDate || !endDate) {
     return (
         <div className="max-w-xl mx-auto mt-20 p-8 text-center bg-white rounded-xl shadow">
             <h3 className="text-xl font-bold text-gray-900 mb-2">Sessie verlopen</h3>
-            <p className="text-gray-600 mb-6">Je boeking sessie lijkt verlopen of niet gestart.</p>
-            <a href="/" className="inline-block bg-brand-600 text-white px-6 py-2 rounded-lg font-medium">Ga naar start</a>
+            <p className="text-gray-600 mb-6">Je boeking sessie lijkt verlopen of de gegevens zijn incompleet.</p>
+            <a href="/" className="inline-block bg-brand-600 text-white px-6 py-2 rounded-lg font-medium">Opnieuw zoeken</a>
         </div>
     );
   }
