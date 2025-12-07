@@ -1,0 +1,5 @@
+{
+  "name": "RCN Maxxton Reservation POC",
+  "description": "Headless frontend POC voor het boeken van accommodaties via de Maxxton API.",
+  "requestFramePermissions": []
+}
