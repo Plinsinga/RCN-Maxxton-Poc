@@ -1,18 +1,28 @@
-// Base URL en API Key uit environment variables halen
-const getEnv = (key: string, fallback: string) => {
-  try {
-    // @ts-ignore
-    return (import.meta as any)?.env?.[key] || fallback;
-  } catch (e) {
-    return fallback;
-  }
-};
-
-const BASE_URL = getEnv('VITE_MAXXTON_BASE_URL', 'https://test-api-maxxton.rcn.snakeware.net');
-const API_KEY = getEnv('VITE_MAXXTON_API_KEY', '');
-
 // Mock Data import
 import { MOCK_RESORTS, MOCK_ACCOMMODATIONS } from './mockData';
+
+// Helper om veilig env vars op te halen (werkt in Vite én standaard Node environments)
+const getEnv = (key: string, fallback: string): string => {
+  try {
+    // Check import.meta.env (Vite standard)
+    // @ts-ignore
+    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[key]) {
+      // @ts-ignore
+      return import.meta.env[key];
+    }
+    // Check process.env (Legacy/Webpack/Node)
+    if (typeof process !== 'undefined' && process.env && process.env[key]) {
+      return process.env[key];
+    }
+  } catch (e) {
+    // Negeer errors bij toegang tot globals
+  }
+  return fallback;
+};
+
+// Base URL en API Key uit environment variables halen
+const BASE_URL = getEnv('VITE_MAXXTON_BASE_URL', 'https://test-api-maxxton.rcn.snakeware.net');
+const API_KEY = getEnv('VITE_MAXXTON_API_KEY', '');
 
 interface RequestOptions extends RequestInit {
   params?: Record<string, string | number | boolean>;
